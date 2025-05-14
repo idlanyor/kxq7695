@@ -86,13 +86,13 @@ $total_all_query = "SELECT
     SUM(CASE WHEN t.transaksi = 'kredit' THEN t.jumlah ELSE 0 END) as total_kredit_all
 FROM tagihan t
 JOIN pelanggan p ON t.id_pelanggan = p.id
-$where";
+";
 $total_pelanggan = $conn->query("SELECT COUNT(*) as total FROM pelanggan")->fetch_assoc()['total'];
 $total_all_result = mysqli_query($conn, $total_all_query);
 $total_all = mysqli_fetch_assoc($total_all_result);
 
 $selisih_keseluruhan = $total_all['total_debit_all'] - $total_all['total_kredit_all'];
-$jatuh_tempo = $conn->query("SELECT COUNT(*) as total FROM tagihan WHERE tgl_jt <= '$today'")->fetch_assoc()['total'];
+$jatuh_tempo = $conn->query("SELECT COUNT(*) as total FROM tagihan WHERE tgl_jt <= '$today' AND jumlah > 0")->fetch_assoc()['total'];
 $recent_transaksi = $conn->query("
     SELECT p.*, b.nama_pelanggan, b.kode_pelanggan 
     FROM tagihan p 
@@ -103,8 +103,8 @@ $recent_transaksi = $conn->query("
 
 $transaksi_status = $conn->query("
    SELECT 
-        COUNT(CASE WHEN tgl_jt < '$today' THEN 1 END) as perlu_remind,
-        COUNT(CASE WHEN tgl_jt >= '$today' THEN 1 END) as aman
+        COUNT(CASE WHEN tgl_jt <= '$today' AND jumlah > 0 THEN 1 END) as perlu_remind,
+        COUNT(CASE WHEN (tgl_jt > '$today' OR jumlah <= 0) THEN 1 END) as aman
     FROM tagihan
 ")->fetch_assoc();
 ?>

@@ -18,7 +18,8 @@ $query = "
         p.nama_pelanggan, 
         p.alamat, 
         p.no_hp,
-        t.jumlah
+        t.jumlah,
+        t.tgl_jt
     FROM tagihan t
     JOIN pelanggan p ON t.id_pelanggan = p.id
     WHERE t.tgl_jt < '$today'
@@ -58,6 +59,7 @@ $total_pages = ceil($total_data / $per_page);
                         <th>Kode Pelanggan</th>
                         <th>Nama Pelanggan</th>
                         <th>Jumlah Tagihan</th>
+                        <th>Tanggal Jatuh Tempo</th>
                         <th>Alamat</th>
                         <th>No. HP</th>
                     </tr>
@@ -71,13 +73,14 @@ $total_pages = ceil($total_data / $per_page);
                                 <td><?= htmlspecialchars($row['kode_pelanggan']) ?></td>
                                 <td><?= htmlspecialchars($row['nama_pelanggan']) ?></td>
                                 <td class="text-end"><?= number_format($row['jumlah'], 0, ',', '.') ?></td>
+                                <td class="text-center"><?= date('d/m/Y', strtotime($row['tgl_jt'])) ?></td>
                                 <td><?= htmlspecialchars($row['alamat']) ?></td>
                                 <td><?= htmlspecialchars($row['no_hp']) ?></td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="text-center text-muted">Tidak ada pelanggan yang lewat jatuh tempo.</td>
+                            <td colspan="7" class="text-center text-muted">Tidak ada pelanggan yang lewat jatuh tempo.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
