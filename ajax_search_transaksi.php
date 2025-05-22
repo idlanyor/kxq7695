@@ -97,7 +97,7 @@ $tagihan = mysqli_query($conn, $query);
             <th class="text-end"><?= number_format($total_k, 0, ',', '.') ?></th>
         </tr>
         <tr class="table-primary">
-            <th colspan="6">Selisih Halaman Ini (D - K)</th>
+            <th colspan="6">Total Tagihan Halaman Ini (D - K)</th>
             <th class="text-end"><?= number_format($total_d - $total_k, 0, ',', '.') ?></th>
         </tr>
         <tr class="table-success">
@@ -109,7 +109,7 @@ $tagihan = mysqli_query($conn, $query);
             <th class="text-end"><?= number_format($total_kredit_all, 0, ',', '.') ?></th>
         </tr>
         <tr class="table-primary">
-            <th colspan="6">Selisih Keseluruhan (D - K)</th>
+            <th colspan="6">Total Tagihan Keseluruhan (D - K)</th>
             <th class="text-end"><?= number_format($total_debit_all - $total_kredit_all, 0, ',', '.') ?></th>
         </tr>
     </tfoot>

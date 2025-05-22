@@ -52,6 +52,7 @@ $transaksi = $conn->query("SELECT * FROM tagihan WHERE id_pelanggan = $id ORDER 
                         <th>Tanggal</th>
                         <th>Transaksi</th>
                         <th>Jumlah</th>
+                        <th>Jatuh Tempo</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,12 +62,13 @@ $transaksi = $conn->query("SELECT * FROM tagihan WHERE id_pelanggan = $id ORDER 
                                 <td><?= htmlspecialchars($row['tgl_transaksi']) ?></td>
                                 <td><?= htmlspecialchars($row['transaksi']) ?></td>
                                 <td><?= number_format($row['jumlah'], 0, ',', '.') ?></td>
+                                <td class="text-center"><?= date('d-m-Y', strtotime($row['tgl_jt'])) ?></td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
                             <td colspan="3" class="text-center text-muted py-4">
-                                <i class="fas fa-receipt fa-lg me-2"></i>Belum ada transaksi
+                                <i class="fas fa-receipt fa-lg me-2"></i>Belum ada transaksi.
                             </td>
                         </tr>
                     <?php endif; ?>

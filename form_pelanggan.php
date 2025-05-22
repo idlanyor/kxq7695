@@ -12,11 +12,10 @@ if (isset($_POST['save'])) {
     $nama_pelanggan = $_POST['nama_pelanggan'];
     $alamat = $_POST['alamat'];
     $no_hp = $_POST['no_hp'];
-    $tagihan = $_POST['tagihan'];
     $keterangan = $_POST['keterangan'];
 
-    $sql = "INSERT INTO pelanggan (kode_pelanggan, nama_pelanggan, alamat, no_hp, tagihan, keterangan)
-            VALUES ('$kode_pelanggan', '$nama_pelanggan', '$alamat', '$no_hp', '$tagihan', '$keterangan')";
+    $sql = "INSERT INTO pelanggan (kode_pelanggan, nama_pelanggan, alamat, no_hp,  keterangan)
+            VALUES ('$kode_pelanggan', '$nama_pelanggan', '$alamat', '$no_hp',  '$keterangan')";
 
     if ($conn->query($sql) === TRUE) {
         $notif = "Data berhasil disimpan.";
@@ -36,7 +35,6 @@ if (isset($_POST['update'])) {
     $nama_pelanggan = $_POST['nama_pelanggan'];
     $alamat = $_POST['alamat'];
     $no_hp = $_POST['no_hp'];
-    $tagihan = $_POST['tagihan'];
     $keterangan = $_POST['keterangan'];
 
     $sql = "UPDATE pelanggan SET 
@@ -44,7 +42,6 @@ if (isset($_POST['update'])) {
                 nama_pelanggan='$nama_pelanggan', 
                 alamat='$alamat', 
                 no_hp='$no_hp', 
-                tagihan='$tagihan', 
                 keterangan='$keterangan'
             WHERE id=$id";
 
@@ -87,107 +84,30 @@ $result_count = $conn->query($sql_count);
 $total_data = $result_count->fetch_assoc()['total'];
 $total_halaman = ceil($total_data / $limit);
 
-$sql_data = "SELECT * FROM pelanggan ORDER BY nama_pelanggan ASC LIMIT $limit OFFSET $offset";
+$sql_data = "SELECT * FROM pelanggan ORDER BY kode_pelanggan ASC LIMIT $limit OFFSET $offset";
 $data_pelanggan = $conn->query($sql_data);
 ?>
 
-<!-- <!DOCTYPE html>
-<html lang="id">
+<style>
+    .form-control-sm-custom {
+        max-width: 400px; /* Lebar input */
+        padding: 4px 8px; /* Padding kecil */
+        font-size: 14px;  /* Ukuran font kecil */
+    }
 
-<head>
-    <meta charset="UTF-8">
-    <title>Form Pelanggan</title>
-    <style>
-        .alert {
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }
+    label.form-label {
+        font-size: 14px;
+    }
 
-        .alert.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        table th,
-        table td {
-            border: 1px solid #ccc;
-            padding: 6px;
-        }
-
-        .pagination {
-            margin-top: 10px;
-        }
-
-        .pagination a {
-            padding: 6px 10px;
-            margin: 0 2px;
-            border: 1px solid #ccc;
-            text-decoration: none;
-        }
-
-        .pagination .pagination-prev,
-        .pagination .pagination-next {
-            font-weight: bold;
-        }
-
-        .data-table {
-            margin-bottom: 20px;
-        }
-
-        form input[type="text"],
-        form input[type="number"] {
-            width: 200px;
-            /* Sesuaikan ukuran */
-            padding: 4px;
-            /* Biar lebih kecil */
-            font-size: 14px;
-            /* Font lebih kecil */
-            margin-bottom: 8px;
-            /* Spasi antar input */
-        }
-
-        form label {
-            display: inline-block;
-            width: 150px;
-            /* Agar label sejajar */
-            margin-bottom: 8px;
-        }
-
-        form button {
-            background-color: #4CAF50;
-            /* Hijau */
-            color: white;
-            border: none;
-            border-radius: 3px;
-            padding: 6px 8px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 10px;
-            width: auto;
-            /* Hanya selebar teks */
-            max-width: 100px;
-        }
-    </style>
-</head> -->
+    button.btn {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+</style>
 
 <div>
-
-    <div class="card shadow-sm border rounded-3 p-4 mb-5">
-        <h2 class="mb-4">Form Pelanggan</h2>
-
+    <div class="card shadow-sm border rounded-3 p-4 mb-5 mx-auto" style="max-width: 500px;">
+        <h2 class="mb-4 fs-5">FORM PELANGGAN</h2>
         <!-- Notifikasi -->
         <?php if (!empty($notif)): ?>
             <div class="alert <?= $notif_class ?> alert-dismissible fade show" role="alert">
@@ -199,46 +119,40 @@ $data_pelanggan = $conn->query($sql_data);
         <form action="form_pelanggan.php" method="POST">
             <input type="hidden" name="id" value="<?= $row['id'] ?? '' ?>">
 
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="kode_pelanggan" class="form-label">Kode Pelanggan:</label>
-                <input type="text" class="form-control" name="kode_pelanggan" required value="<?= $row['kode_pelanggan'] ?? '' ?>">
+                <input type="text" class="form-control form-control-sm-custom" name="kode_pelanggan" required value="<?= $row['kode_pelanggan'] ?? '' ?>">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="nama_pelanggan" class="form-label">Nama Pelanggan:</label>
-                <input type="text" class="form-control" name="nama_pelanggan" required value="<?= $row['nama_pelanggan'] ?? '' ?>">
+                <input type="text" class="form-control form-control-sm-custom" name="nama_pelanggan" required value="<?= $row['nama_pelanggan'] ?? '' ?>">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="alamat" class="form-label">Alamat:</label>
-                <input type="text" class="form-control" name="alamat" required value="<?= $row['alamat'] ?? '' ?>">
+                <input type="text" class="form-control form-control-sm-custom" name="alamat" required value="<?= $row['alamat'] ?? '' ?>">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="no_hp" class="form-label">No. HP:</label>
-                <input type="text" class="form-control" name="no_hp" required value="<?= $row['no_hp'] ?? '' ?>">
+                <input type="text" class="form-control form-control-sm-custom" name="no_hp" required value="<?= $row['no_hp'] ?? '' ?>">
             </div>
 
-            <div class="mb-3">
-                <label for="tagihan" class="form-label">Tagihan:</label>
-                <input type="number" class="form-control" name="tagihan" required value="<?= $row['tagihan'] ?? '' ?>">
-            </div>
-
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="keterangan" class="form-label">Keterangan:</label>
-                <input type="text" class="form-control" name="keterangan" value="<?= $row['keterangan'] ?? '' ?>">
+                <input type="text" class="form-control form-control-sm-custom" name="keterangan" value="<?= $row['keterangan'] ?? '' ?>">
             </div>
 
             <?php if (isset($row['id'])): ?>
-                <button type="submit" name="update" class="btn btn-warning">Update</button>
+                <button type="submit" name="update" class="btn btn-warning btn-sm">Update</button>
             <?php else: ?>
-                <button type="submit" name="save" class="btn btn-primary">Simpan</button>
+                <button type="submit" name="save" class="btn btn-primary btn-sm">Simpan</button>
             <?php endif; ?>
         </form>
-    </div>
-
+    </div>    
     <div class="card shadow-sm border rounded-3 p-4">
-        <h2 class="mb-4">Daftar Pelanggan</h2>
+        <h2 class="mb-4">DAFTAR PELANGGAN</h2>
 
         <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle">
@@ -249,7 +163,6 @@ $data_pelanggan = $conn->query($sql_data);
                         <th>Nama Pelanggan</th>
                         <th>Alamat</th>
                         <th>No HP</th>
-                        <th>Tagihan</th>
                         <th>Keterangan</th>
                         <th>Aksi</th>
                     </tr>
@@ -262,7 +175,6 @@ $data_pelanggan = $conn->query($sql_data);
                             <td><?= $item['nama_pelanggan'] ?></td>
                             <td><?= $item['alamat'] ?></td>
                             <td><?= $item['no_hp'] ?></td>
-                            <td>Rp <?= number_format($item['tagihan'], 0, ',', '.') ?></td>
                             <td><?= $item['keterangan'] ?></td>
                             <td>
                                 <a href="index.php?page=form_pelanggan&edit=<?= $item['id'] ?>" class="btn btn-sm btn-info text-white">Edit</a>

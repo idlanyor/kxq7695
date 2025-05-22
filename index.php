@@ -63,19 +63,19 @@ $settings = mysqli_fetch_assoc($settings_result);
             <!-- Divider -->
             <hr class="sidebar-divider">
 
-            <!-- Nav Item - Master Barang -->
+             <!-- Nav Item - Form Pelanggan -->
+             <li class="nav-item <?= ($_GET['page'] ?? '') == 'form_pelanggan' ? 'active' : '' ?>">
+                <a class="nav-link" href="index.php?page=form_pelanggan">
+                    <i class="fas fa-fw fa-align-left"></i>
+                    <span>Form Pelanggan</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Master Pelanggan -->
             <li class="nav-item <?= ($_GET['page'] ?? '') == 'master_pelanggan' ? 'active' : '' ?>">
                 <a class="nav-link" href="index.php?page=master_pelanggan">
                     <i class="fas fa-fw fa-boxes-stacked"></i>
                     <span>Master Pelanggan</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - Form Barang -->
-            <li class="nav-item <?= ($_GET['page'] ?? '') == 'form_pelanggan' ? 'active' : '' ?>">
-                <a class="nav-link" href="index.php?page=form_pelanggan">
-                    <i class="fas fa-fw fa-align-left"></i>
-                    <span>Form Pelanggan</span>
                 </a>
             </li>
 
@@ -97,7 +97,15 @@ $settings = mysqli_fetch_assoc($settings_result);
                 </a>
             </li>
 
-            <!-- Nav Item - Stok Limit -->
+            <!-- Nav Item - Akan Jatuh Tempo -->
+            <li class="nav-item <?= ($_GET['page'] ?? '') == 'akan_jt' ? 'active' : '' ?>">
+                <a class="nav-link" href="index.php?page=akan_jt">
+                    <i class="fas fa-fw fa-cart-flatbed"></i>
+                    <span>Akan Jatuh Tempo</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Lewat Jatuh Tempo -->
             <li class="nav-item <?= ($_GET['page'] ?? '') == 'jatuh_tempo' ? 'active' : '' ?>">
                 <a class="nav-link" href="index.php?page=jatuh_tempo">
                     <i class="fas fa-fw fa-cart-flatbed"></i>
@@ -130,7 +138,12 @@ $settings = mysqli_fetch_assoc($settings_result);
             <!-- Main Content -->
             <div id="content">
                 <!-- Topbar -->
-               
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                </nav>
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <?php
@@ -154,6 +167,9 @@ $settings = mysqli_fetch_assoc($settings_result);
                             break;
                         case 'detail_pelanggan':
                             include 'detail_pelanggan.php';
+                            break;
+                        case 'akan_jt':
+                            include 'akan_jt.php';
                             break;
                         case 'jatuh_tempo':
                             include 'jatuh_tempo.php';

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 11, 2025 at 12:29 PM
+-- Generation Time: May 20, 2025 at 05:24 AM
 -- Server version: 10.1.36-MariaDB
 -- PHP Version: 7.0.32
 
@@ -43,10 +43,17 @@ CREATE TABLE `pelanggan` (
 --
 
 INSERT INTO `pelanggan` (`id`, `kode_pelanggan`, `nama_pelanggan`, `alamat`, `no_hp`, `tagihan`, `keterangan`) VALUES
-(1, 'PTN0001', 'BU ANI', 'BABAKAN', '085123456789', 4650000, 'BARU'),
 (2, 'PTN0002', 'BU TITI', 'PURBALINGGA', '085123456712', 1500000, 'LAMA'),
-(3, 'PTN0003', 'ISMA', 'BOJANEGARA', '085123456711', 3000000, 'LAMA'),
-(7, 'PTN0005', 'LINDA', 'BABAKAN', '0855', 4500000, 'BARU');
+(3, 'PTN0003', 'ISMA', 'BOJANEGARA', '085123456711', 0, 'LAMA'),
+(7, 'PTN0005', 'LINDA', 'BABAKAN', '0855', 500000, 'BARU'),
+(8, 'PTN0004', 'YENI', 'PURBALINGGA', '085123456789', 4000000, 'LAMA'),
+(9, 'PTN0001', 'BU ANI', 'PURBALINGGA', '085123456789', 0, 'LAMA'),
+(10, 'PTN0006', 'ISMI', 'BOJANEGARA', '085123456712', 0, 'BARU'),
+(11, 'PTN0007', 'DEDI', 'PURBALINGGA', '085743532795', 3500000, 'BARU'),
+(12, 'PTN0008', 'LELI', 'PURBALINGGA', '085123456711', 0, 'BARU'),
+(13, 'PTN0009', 'ARRA', 'KUTASARI', '085123456789', 500000, 'BARU'),
+(14, 'PTN0010', 'UNI', 'KEMANGKON', '085123456711', 3000000, 'LAMA'),
+(15, 'PTN0011', 'DINDA', 'BANCAR', '085123456789', 400000, 'LAMA');
 
 -- --------------------------------------------------------
 
@@ -83,8 +90,6 @@ CREATE TABLE `tagihan` (
 --
 -- Dumping data for table `tagihan`
 --
-ALTER TABLE `tagihan`
-ADD FOREIGN KEY (`id_pelanggan`) REFERENCES `pelanggan`(`id`) ON DELETE CASCADE;
 
 INSERT INTO `tagihan` (`id`, `id_pelanggan`, `tgl_transaksi`, `transaksi`, `jumlah`, `keterangan`, `tgl_jt`) VALUES
 (3, 7, '2025-05-11 17:19:57', 'debit', 5000000, 'VIVO 2', '2025-08-11'),
@@ -93,7 +98,16 @@ INSERT INTO `tagihan` (`id`, `id_pelanggan`, `tgl_transaksi`, `transaksi`, `juml
 (6, 1, '2025-05-11 17:24:41', 'kredit', 1000000, '-', NULL),
 (7, 2, '2025-05-11 17:25:59', 'debit', 3000000, 'VIVO 2', '2025-05-11'),
 (8, 3, '2025-05-11 17:26:21', 'debit', 3000000, 'VIVO y15', '2025-05-13'),
-(9, 2, '2025-05-11 17:26:38', 'kredit', 1500000, '-', NULL);
+(9, 2, '2025-05-11 17:26:38', 'kredit', 1500000, '-', NULL),
+(10, 8, '2025-05-12 22:09:35', 'debit', 4000000, 'VIVO y15', '2025-05-13'),
+(11, 15, '2025-05-12 22:10:02', 'debit', 400000, 'VIVO y15', '2025-05-15'),
+(12, 11, '2025-05-12 22:10:23', 'debit', 5000000, 'VIVO y15', '2025-05-17'),
+(13, 14, '2025-05-12 22:10:43', 'debit', 3000000, 'VIVO y15', '2025-05-20'),
+(14, 11, '2025-05-12 22:11:18', 'debit', 4000000, 'VIVO y15', '2025-05-18'),
+(15, 7, '2025-05-12 22:12:47', 'kredit', 4000000, '-', NULL),
+(16, 13, '2025-05-13 09:39:43', 'debit', 500000, 'VIVO y15', '2025-05-13'),
+(17, 11, '2025-05-13 20:03:01', 'kredit', 5500000, '-', NULL),
+(18, 3, '2025-05-13 20:05:07', 'kredit', 3000000, '-', NULL);
 
 -- --------------------------------------------------------
 
@@ -146,13 +160,13 @@ ALTER TABLE `tagihan`
 -- AUTO_INCREMENT for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `tagihan`
 --
 ALTER TABLE `tagihan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
