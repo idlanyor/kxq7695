@@ -81,6 +81,8 @@ if (isset($_GET['export'])) {
 }
 
 $today = date('Y-m-d');
+$end_date = date('Y-m-d', strtotime('+15 days')); // 15 hari ke depan
+
 $total_all_query = "SELECT 
     SUM(CASE WHEN t.transaksi = 'debit' THEN t.jumlah ELSE 0 END) as total_debit_all,
     SUM(CASE WHEN t.transaksi = 'kredit' THEN t.jumlah ELSE 0 END) as total_kredit_all
@@ -93,11 +95,25 @@ $total_all = mysqli_fetch_assoc($total_all_result);
 
 $selisih_keseluruhan = $total_all['total_debit_all'] - $total_all['total_kredit_all'];
 $jatuh_tempo = $conn->query("SELECT COUNT(*) as total FROM tagihan WHERE tgl_jt <= '$today' AND jumlah > 0")->fetch_assoc()['total'];
+
+// Query untuk pelanggan yang akan jatuh tempo dalam 15 hari ke depan
+$akan_jt = $conn->query("SELECT COUNT(*) as total FROM tagihan WHERE tgl_jt BETWEEN '$today' AND '$end_date' AND jumlah > 0")->fetch_assoc()['total'];
+
 $recent_transaksi = $conn->query("
     SELECT p.*, b.nama_pelanggan, b.kode_pelanggan 
     FROM tagihan p 
     JOIN pelanggan b ON p.id_pelanggan = b.id 
     ORDER BY p.tgl_transaksi DESC 
+    LIMIT 5
+");
+
+// Query untuk pelanggan yang akan jatuh tempo dalam 15 hari ke depan (untuk ditampilkan di tabel)
+$akan_jt_list = $conn->query("
+    SELECT t.id, p.kode_pelanggan, p.nama_pelanggan, t.jumlah, t.tgl_jt, p.alamat, p.no_hp
+    FROM tagihan t
+    JOIN pelanggan p ON t.id_pelanggan = p.id
+    WHERE t.tgl_jt BETWEEN '$today' AND '$end_date' AND t.jumlah > 0
+    ORDER BY t.tgl_jt ASC
     LIMIT 5
 ");
 
@@ -188,6 +204,10 @@ $transaksi_status = $conn->query("
         }
 
         .stat-card.warning {
+            border-left-color: var(--warning-color);
+        }
+        
+        .stat-card.orange {
             border-left-color: var(--warning-color);
         }
 
@@ -303,19 +323,19 @@ $transaksi_status = $conn->query("
                     </div>
 
                     <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stat-card info h-100">
+                        <div class="card stat-card orange h-100">
                             <div class="card-body">
                                 <div class="row align-items-center">
                                     <div class="col">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                            Status Jatuh Tempo
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            Jatuh Tempo 15 Hari
                                         </div>
                                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            <?= number_format($transaksi_status['aman']) ?> Aman
+                                            <?= number_format($akan_jt) ?>
                                         </div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-chart-pie stat-icon"></i>
+                                        <i class="fas fa-clock stat-icon"></i>
                                     </div>
                                 </div>
                             </div>
@@ -374,6 +394,54 @@ $transaksi_status = $conn->query("
                         </div>
                     </div>
                 </div>
+                
+                <!-- Pelanggan Jatuh Tempo 15 Hari Ke Depan -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-warning">Pelanggan Jatuh Tempo 15 Hari Ke Depan</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Kode Pelanggan</th>
+                                                <th>Nama Pelanggan</th>
+                                                <th>Jumlah Tagihan</th>
+                                                <th>Tanggal Jatuh Tempo</th>
+                                                <th>Alamat</th>
+                                                <th>No. HP</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (mysqli_num_rows($akan_jt_list) > 0): ?>
+                                                <?php while ($row = $akan_jt_list->fetch_assoc()): ?>
+                                                    <tr>
+                                                        <td><?= htmlspecialchars($row['kode_pelanggan']) ?></td>
+                                                        <td><?= htmlspecialchars($row['nama_pelanggan']) ?></td>
+                                                        <td class="text-end"><?= number_format($row['jumlah'], 0, ',', '.') ?></td>
+                                                        <td class="text-center"><?= date('d/m/Y', strtotime($row['tgl_jt'])) ?></td>
+                                                        <td><?= htmlspecialchars($row['alamat']) ?></td>
+                                                        <td><?= htmlspecialchars($row['no_hp']) ?></td>
+                                                    </tr>
+                                                <?php endwhile; ?>
+                                            <?php else: ?>
+                                                <tr>
+                                                    <td colspan="6" class="text-center text-muted">Tidak ada pelanggan yang jatuh tempo dalam 15 hari ke depan.</td>
+                                                </tr>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a href="index.php?page=akan_jt" class="btn btn-warning">Lihat Semua</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -393,31 +461,21 @@ $transaksi_status = $conn->query("
                             '#f6c23e', // kuning buat "Perlu Reminder"
                             '#1cc88a' // hijau buat "Aman"
                         ],
-                        borderColor: [
-                            '#f1b722',
-                            '#17a673'
-                        ],
                         borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.label}: ${context.parsed} data`;
-                                }
-                            }
+                            position: 'bottom'
                         }
                     }
                 }
             });
         </script>
-
+    </div>
 </body>
 
 </html>

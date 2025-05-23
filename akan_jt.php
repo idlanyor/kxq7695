@@ -11,10 +11,9 @@ $offset = ($page - 1) * $per_page;
 // Mengatur zona waktu ke Asia/Jakarta
 date_default_timezone_set('Asia/Jakarta');
 
-// Hitung tanggal 15 hari yang lalu
+// Hitung tanggal hari ini dan 15 hari ke depan
 $today = date('Y-m-d');
-$start_date = date('Y-m-d', strtotime('-15 days'));
-$end_date = date('Y-m-d', strtotime('+1 day'));
+$end_date = date('Y-m-d', strtotime('+15 days'));
 
 // Persiapkan query dengan parameter
 $query = "
@@ -28,7 +27,8 @@ $query = "
         t.tgl_jt
     FROM tagihan t
     JOIN pelanggan p ON t.id_pelanggan = p.id
-    WHERE t.tgl_jt BETWEEN ? AND ? AND t.tgl_jt >= ?
+    WHERE t.tgl_jt BETWEEN ? AND ? AND t.jumlah > 0
+    ORDER BY t.tgl_jt ASC
     LIMIT ?, ?
 ";
 
@@ -36,7 +36,7 @@ $query = "
 $stmt = mysqli_prepare($conn, $query);
 
 // Bind parameter
-mysqli_stmt_bind_param($stmt, 'ssssi', $start_date, $end_date, $today, $offset, $per_page);
+mysqli_stmt_bind_param($stmt, 'ssii', $today, $end_date, $offset, $per_page);
 
 // Eksekusi statement
 mysqli_stmt_execute($stmt);
@@ -52,7 +52,7 @@ $total_query = "
     SELECT COUNT(*) as total
     FROM tagihan t
     JOIN pelanggan p ON t.id_pelanggan = p.id
-    WHERE t.tgl_jt BETWEEN '$start_date' AND '$today' AND t.tgl_jt >= '$today'
+    WHERE t.tgl_jt BETWEEN '$today' AND '$end_date' AND t.jumlah > 0
 ";
 $total_result = mysqli_query($conn, $total_query);
 if (!$total_result) {
@@ -65,7 +65,7 @@ $total_pages = ceil($total_data / $per_page);
 
 <div class="card shadow-sm border mb-4">
     <div class="card-body">
-        <h2 class="text-center mb-4">Daftar Tagihan Jatuh Tempo dalam 15 Hari Terakhir</h2>
+        <h2 class="text-center mb-4">Daftar Tagihan Jatuh Tempo dalam 15 Hari Ke Depan</h2>
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover align-middle text-nowrap">
                 <thead class="table-dark text-center">
@@ -95,7 +95,7 @@ $total_pages = ceil($total_data / $per_page);
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="7" class="text-center text-muted">Tidak ada tagihan yang jatuh tempo dalam 15 hari terakhir.</td>
+                            <td colspan="7" class="text-center text-muted">Tidak ada tagihan yang jatuh tempo dalam 15 hari ke depan.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
