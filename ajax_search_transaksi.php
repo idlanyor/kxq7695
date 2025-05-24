@@ -9,6 +9,32 @@ $limit   = 10;
 $offset  = ($page - 1) * $limit;
 
 $filters = [];
+function formatTanggalIndonesia($tanggal)
+{
+    // Pastikan hanya mengambil bagian tanggal saja (jika ada jam)
+    $tanggal = substr($tanggal, 0, 10);
+
+    $bulan = array(
+        1 => 'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember'
+    );
+
+    $pecahkan = explode('-', $tanggal);
+    if (count($pecahkan) == 3) {
+        return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
+    }
+    return $tanggal;
+}
 
 if (!empty($q)) {
     $safe_q = $conn->real_escape_string($q);
@@ -80,7 +106,7 @@ $tagihan = mysqli_query($conn, $query);
                 <td><?= $no++ ?></td>
                 <td><?= $row['kode_pelanggan'] ?></td>
                 <td><?= $row['nama_pelanggan'] ?></td>
-                <td><?= $row['tgl_transaksi'] ?></td>
+                <td><?= formatTanggalIndonesia($row['tgl_transaksi']) ?></td>
                 <td><?= ucfirst($row['transaksi']) ?></td>
                 <td class="text-end"><?= number_format($row['jumlah'], 0, ',', '.') ?></td>
                 <td><?= $row['keterangan'] ?></td>

@@ -1,8 +1,6 @@
 <?php
-// Koneksi ke database
 include 'config/koneksi.php';
 
-// Inisialisasi variabel notifikasi
 $notif = '';
 $notif_class = '';
 

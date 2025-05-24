@@ -97,7 +97,7 @@ $selisih_keseluruhan = $total_all['total_debit_all'] - $total_all['total_kredit_
 $jatuh_tempo = $conn->query("SELECT COUNT(*) as total FROM tagihan WHERE tgl_jt <= '$today' AND jumlah > 0")->fetch_assoc()['total'];
 
 // Query untuk pelanggan yang akan jatuh tempo dalam 15 hari ke depan
-$akan_jt = $conn->query("SELECT COUNT(*) as total FROM tagihan WHERE tgl_jt BETWEEN '$today' AND '$end_date' AND jumlah > 0")->fetch_assoc()['total'];
+$akan_jt = $conn->query("SELECT COUNT(*) as total FROM tagihan WHERE tgl_jt >= '$today' AND tgl_jt <= '$end_date' AND jumlah > 0")->fetch_assoc()['total'];
 
 $recent_transaksi = $conn->query("
     SELECT p.*, b.nama_pelanggan, b.kode_pelanggan 
@@ -112,7 +112,7 @@ $akan_jt_list = $conn->query("
     SELECT t.id, p.kode_pelanggan, p.nama_pelanggan, t.jumlah, t.tgl_jt, p.alamat, p.no_hp
     FROM tagihan t
     JOIN pelanggan p ON t.id_pelanggan = p.id
-    WHERE t.tgl_jt BETWEEN '$today' AND '$end_date' AND t.jumlah > 0
+     WHERE t.tgl_jt >= '$today' AND t.tgl_jt <= '$end_date' AND t.jumlah > 0
     ORDER BY t.tgl_jt ASC
     LIMIT 5
 ");
@@ -206,7 +206,7 @@ $transaksi_status = $conn->query("
         .stat-card.warning {
             border-left-color: var(--warning-color);
         }
-        
+
         .stat-card.orange {
             border-left-color: var(--warning-color);
         }
@@ -394,7 +394,7 @@ $transaksi_status = $conn->query("
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Pelanggan Jatuh Tempo 15 Hari Ke Depan -->
                 <div class="row">
                     <div class="col-12">

@@ -1,7 +1,6 @@
 <?php
 include 'config/koneksi.php';
 
-// Get search parameters
 $keyword = $_GET['keyword'] ?? '';
 $tanggal_dari = $_GET['tanggal_dari'] ?? '';
 $tanggal_sampai = $_GET['tanggal_sampai'] ?? '';
@@ -9,7 +8,6 @@ $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $limit = 10;
 $start = ($page - 1) * $limit;
 
-// Build where clause
 $where = [];
 if (!empty($keyword)) {
     $escaped = $conn->real_escape_string($keyword);
@@ -29,12 +27,10 @@ if (!empty($tanggal_dari) && !empty($tanggal_sampai)) {
 
 $where_sql = count($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
-// Get total count
 $count_q = $conn->query("SELECT COUNT(*) as total FROM persediaan p JOIN barang b ON p.id_barang = b.id $where_sql");
 $total_data = $count_q->fetch_assoc()['total'] ?? 0;
 $total_page = ceil($total_data / $limit);
 
-// Get data
 $query = "SELECT p.*, b.nama_barang, b.kode_barang FROM persediaan p 
           JOIN barang b ON p.id_barang = b.id 
           $where_sql 

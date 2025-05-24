@@ -4,7 +4,6 @@ include 'config/koneksi.php';
 header("Content-Type: application/vnd-ms-excel");
 header("Content-Disposition: attachment; filename=daftar_pelanggan.xls");
 
-// Ambil data pelanggan dari database
 $query = "SELECT * FROM pelanggan ORDER BY nama_pelanggan ASC";
 $result = $conn->query($query);
 

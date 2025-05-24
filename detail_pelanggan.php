@@ -3,11 +3,9 @@ include 'config/koneksi.php';
 
 $id = $_GET['id'] ?? 0;
 
-// Cek data pelanggan
 $pelanggan = $conn->query("SELECT * FROM pelanggan WHERE id = $id");
 $data = $pelanggan->fetch_assoc();
 
-// Ambil riwayat transaksi (asumsikan ada tabel `transaksi`)
 $transaksi = $conn->query("SELECT * FROM tagihan WHERE id_pelanggan = $id ORDER BY tgl_transaksi DESC");
 ?>
 

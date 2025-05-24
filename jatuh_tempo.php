@@ -9,8 +9,13 @@ $page = max(1, $page);
 $offset = ($page - 1) * $per_page;
 
 $today = date('Y-m-d');
-
-// Ambil data tagihan yang lewat jatuh tempo, join dengan pelanggan
+$latest_tagihan_query = "
+    SELECT MAX(t.id) as latest_id
+    FROM tagihan t
+    JOIN pelanggan p ON t.id_pelanggan = p.id
+    WHERE t.tgl_jt < '$today' AND p.tagihan > 0
+    GROUP BY p.kode_pelanggan
+";
 $query = "
     SELECT 
         t.id, 
@@ -18,11 +23,13 @@ $query = "
         p.nama_pelanggan, 
         p.alamat, 
         p.no_hp,
-        t.jumlah,
+        p.tagihan as saldo_tagihan,
         t.tgl_jt
     FROM tagihan t
     JOIN pelanggan p ON t.id_pelanggan = p.id
-    WHERE t.tgl_jt < '$today'
+    JOIN ($latest_tagihan_query) latest ON t.id = latest.latest_id 
+    WHERE t.tgl_jt < '$today' AND p.tagihan > 0
+    ORDER BY p.kode_pelanggan, t.tgl_jt DESC
     LIMIT $offset, $per_page
 ";
 
@@ -31,12 +38,9 @@ if (!$result) {
     die("Query gagal: " . mysqli_error($conn));
 }
 
-// Query untuk menghitung total data
 $total_query = "
     SELECT COUNT(*) as total
-    FROM tagihan t
-    JOIN pelanggan p ON t.id_pelanggan = p.id
-    WHERE t.tgl_jt < '$today'
+    FROM ($latest_tagihan_query) latest
 ";
 $total_result = mysqli_query($conn, $total_query);
 if (!$total_result) {
@@ -58,7 +62,7 @@ $total_pages = ceil($total_data / $per_page);
                         <th>No</th>
                         <th>Kode Pelanggan</th>
                         <th>Nama Pelanggan</th>
-                        <th>Jumlah Tagihan</th>
+                        <th>Saldo Tagihan</th>
                         <th>Tanggal Jatuh Tempo</th>
                         <th>Alamat</th>
                         <th>No. HP</th>
@@ -72,7 +76,7 @@ $total_pages = ceil($total_data / $per_page);
                                 <td class="text-center"><?= $no++ ?></td>
                                 <td><?= htmlspecialchars($row['kode_pelanggan']) ?></td>
                                 <td><?= htmlspecialchars($row['nama_pelanggan']) ?></td>
-                                <td class="text-end"><?= number_format($row['jumlah'], 0, ',', '.') ?></td>
+                                <td class="text-end"><?= number_format($row['saldo_tagihan'], 0, ',', '.') ?></td>
                                 <td class="text-center"><?= date('d/m/Y', strtotime($row['tgl_jt'])) ?></td>
                                 <td><?= htmlspecialchars($row['alamat']) ?></td>
                                 <td><?= htmlspecialchars($row['no_hp']) ?></td>
